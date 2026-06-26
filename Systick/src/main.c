@@ -30,51 +30,56 @@ static void button_init(void){
     GPIOA_ODR &= ~(1U << 1); //Pull down resisitor for button
 }
 
+
+static void led_set(bool on){
+    if (on){
+        GPIOA_BSRR = (1U << 0);
+    }
+    else{
+        GPIOA_BSRR = (1U << 16);
+    }
+}
+
 int main(void)
 {
     led_init();
     button_init();
     systick_init();
-    GPIOA_BSRR = (1U << 16); //Setting the output of PA0 to low
+    led_set(false);
     
     bool debounced_state = false;
     bool last_debounced_state = false;
     bool raw_state = false;
-    bool change_pending = false;
     bool armed = true;
-    int change_start_ms = 0;
+    bool led_on = false;
+    uint32_t change_start_ms = 0;
+
 
 
     for (;;){
         raw_state = (GPIOA_IDR >> 1) & 1; //Checking if the button is pressed or not, RAW
-        if (raw_state == debounced_state){
-            change_pending = false;
-        }
-        else{
-            change_pending = true;
-            if (last_debounced_state == false){
-                change_start_ms = millis();
-                while ((millis() - change_start_ms) < DEBOUNCE_MS){
-                    __asm__ volatile ("nop");
+        if (raw_state != debounced_state){
+            change_start_ms = millis();
+            while ((millis() - change_start_ms) < DEBOUNCE_MS){
+                __asm__ volatile ("nop");
                 }
-                
+
                 if (((GPIOA_IDR >> 1) & 1) != debounced_state){
-                    GPIOA_BSRR = (1U << 0);
-                    armed = false;
                     debounced_state = raw_state;
                 }
-                else{
-                    GPIOA_BSRR = (1U << 16);
-                    armed = true;
-                    debounced_state = false;
-                }
+            }
                 
+            if (debounced_state && !last_debounced_state && armed){
+              led_on = !led_on;    
+              led_set(led_on);
+              armed = false;
             }
 
-        }
-    
-    
-    last_debounced_state = debounced_state;
+            if (!debounced_state){
+                armed = true;
+            }
+            
+        
+        last_debounced_state = debounced_state;
     }
-    
 }
