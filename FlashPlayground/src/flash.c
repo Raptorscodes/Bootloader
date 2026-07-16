@@ -32,7 +32,7 @@ void flash_write_word(uint32_t address, uint16_t data){
     flash_wait_busy();
     flash_unlock();
     FLASH_CR |= FLASH_CR_PG;
-    FLASH_AR = address;
+
     *(volatile uint16_t *)address = data;
     flash_wait_busy();
     FLASH_CR &= ~FLASH_CR_PG;

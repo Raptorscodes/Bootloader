@@ -72,9 +72,9 @@
 #define USART_CR1_UE    (1U << 13)  /* USART enable — set after pins and BRR */
 
 /* -------------------------------------------------------------------------- */
-/* FLASH controller — YOU fill this section in                                */                                  */
+/* FLASH controller                                                           */
 /* Need: KEYR, SR, CR, AR (+ unlock keys, BSY/PG/PER/STRT bits)               */
-/* Scratch page far from code: e.g. 0x0800F000 (page 60 on 64K map)           */
+/* Scratch page far from code: e.g. 0x0800FC00                                */
 /* -------------------------------------------------------------------------- */
 
 #define SCRATCH_PAGE 0x0800FC00
