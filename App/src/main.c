@@ -32,8 +32,5 @@
  
      for (;;) {
          GPIOC_BSRR = (1U << 29);   /* on  */
-         delay(800000);
-         GPIOC_BSRR = (1U << 13);   /* off */
-         delay(800000);
      }
  }
